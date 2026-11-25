@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MenuFlex — tu menú, a tu manera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-paper: #F1E8D3;
+    --bg-card: #FBF6EA;
+    --bg-dark: #1B2A22;
+    --bg-dark-2: #24382C;
+    --ink: #241C10;
+    --ink-soft: #5B5040;
+    --chalk: #F3EFE4;
+    --chalk-soft: #C9CDBE;
+    --chili: #C1401F;
+    --chili-dark: #8F2E14;
+    --mustard: #D98F1F;
+    --line: rgba(36,28,16,0.16);
+    --line-dark: rgba(243,239,228,0.16);
+    --radius: 4px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg-paper);
+    color:var(--ink);
+    font-family:'Public Sans', sans-serif;
+    font-size:16px;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.display{
+    font-family:'Bricolage Grotesque', sans-serif;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    margin:0;
+    color:inherit;
+  }
+  button{font-family:inherit;cursor:pointer;}
+  a{color:inherit;}
+  ::selection{background:var(--mustard); color:var(--ink);}
+
+  /* ---------- Layout shell ---------- */
+  .wrap{max-width:1080px; margin:0 auto; padding:0 28px;}
+  @media (max-width:640px){ .wrap{padding:0 18px;} }
+
+  header.topbar{
+    background:var(--bg-dark);
+    color:var(--chalk);
+    border-bottom:1px solid var(--line-dark);
+  }
+  .topbar-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 0;
+  }
+  .logo{
+    display:flex; align-items:baseline; gap:9px; cursor:pointer;
+  }
+  .logo .display{font-size:22px; color:var(--chalk);}
+  .logo span.tag{font-size:12.5px; color:var(--chalk-soft); font-style:italic;}
+  .cart-btn{
+    background:transparent;
+    border:1px solid var(--line-dark);
+    color:var(--chalk);
+    padding:9px 16px;
+    border-radius:999px;
+    font-size:14.5px;
+    font-weight:600;
+    display:flex; align-items:center; gap:8px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .cart-btn:hover{ border-color:var(--mustard); }
+  .cart-badge{
+    background:var(--chili);
+    color:var(--chalk);
+    border-radius:999px;
+    min-width:20px; height:20px;
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:11.5px; font-weight:700; padding:0 5px;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:
+      radial-gradient(ellipse 70% 90% at 85% -10%, rgba(217,143,31,0.16), transparent 60%),
+      var(--bg-dark);
+    color:var(--chalk);
+    padding:56px 0 40px;
+    border-bottom:1px solid var(--line-dark);
+  }
+  .hero h1{
+    font-size:44px;
+    max-width:620px;
+    line-height:1.08;
+  }
+  .hero p.lead{
+    max-width:480px;
+    color:var(--chalk-soft);
+    font-size:16.5px;
+    margin-top:16px;
+  }
+  @media (max-width:640px){ .hero h1{font-size:32px;} }
+
+  .chips{
+    display:flex; flex-wrap:wrap; gap:9px;
+    margin-top:28px;
+  }
+  .chip{
+    background:transparent;
+    border:1px solid var(--line-dark);
+    color:var(--chalk-soft);
+    padding:8px 15px;
+    border-radius:999px;
+    font-size:14px;
+    font-weight:500;
+    transition:all .15s ease;
+  }
+  .chip.active, .chip:hover{
+    border-color:var(--mustard);
+    color:var(--chalk);
+    background:rgba(217,143,31,0.12);
+  }
+
+  /* ---------- Restaurant stalls ---------- */
+  .section{ padding:40px 0; }
+  .section-head{
+    display:flex; align-items:baseline; justify-content:space-between;
+    margin-bottom:20px;
+  }
+  .section-head h2{ font-size:23px; }
+  .section-head .count{ font-size:13.5px; color:var(--ink-soft); }
+
+  .stall-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:16px;
+  }
+  .stall-card{
+    background:var(--bg-card);
+    border:1px solid var(--line);
+    border-left:4px solid var(--cuisine-color, var(--chili));
+    border-radius:2px;
+    padding:18px 18px 16px;
+    text-align:left;
+    display:flex; flex-direction:column; gap:10px;
+    transition:transform .12s ease, border-color .12s ease;
+  }
+  .stall-card:hover{ transform:translateY(-2px); }
+  .stall-top{ display:flex; align-items:center; gap:12px; }
+  .stall-mono{
+    width:42px; height:42px; border-radius:50%;
+    background:var(--cuisine-color, var(--chili));
+    color:var(--chalk);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Bricolage Grotesque', sans-serif;
+    font-weight:700; font-size:17px;
+    flex-shrink:0;
+  }
+  .stall-name{ font-family:'Bricolage Grotesque', sans-serif; font-weight:600; font-size:17px; }
+  .stall-cuisine{ font-size:13px; color:var(--ink-soft); margin-top:1px;}
+  .stall-meta{
+    display:flex; gap:14px; font-size:13px; color:var(--ink-soft);
+    border-top:1px solid var(--line); padding-top:10px;
+  }
+  .stall-meta b{ color:var(--ink); font-weight:600; }
+
+  /* ---------- Restaurant detail ---------- */
+  .rest-banner{
+    background:var(--bg-dark-2);
+    color:var(--chalk);
+    padding:30px 0 26px;
+    border-bottom:1px solid var(--line-dark);
+  }
+  .back-link{
+    background:none; border:none; color:var(--chalk-soft);
+    font-size:13.5px; font-weight:600; padding:0; margin-bottom:14px;
+    display:inline-flex; align-items:center; gap:6px;
+  }
+  .back-link:hover{ color:var(--mustard); }
+  .rest-banner-row{ display:flex; align-items:center; gap:16px; }
+  .rest-banner h2{ font-size:28px; }
+  .rest-banner .stall-meta{ border-top:none; padding-top:6px; color:var(--chalk-soft); }
+  .rest-banner .stall-meta b{ color:var(--chalk); }
+
+  .cat-label{
+    font-size:13.5px; font-weight:700; color:var(--chili-dark);
+    text-transform:uppercase; letter-spacing:.05em;
+    margin:26px 0 12px;
+  }
+  .cat-label:first-child{ margin-top:0; }
+
+  .dish-list{ display:flex; flex-direction:column; }
+  .dish-row{
+    display:flex; justify-content:space-between; gap:18px;
+    padding:18px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .dish-row:last-child{ border-bottom:none; }
+  .dish-info{ flex:1; min-width:0; }
+  .dish-name{ font-family:'Bricolage Grotesque', sans-serif; font-weight:600; font-size:17px; }
+  .dish-desc{ font-size:14px; color:var(--ink-soft); margin-top:4px; max-width:480px; }
+  .dish-price{ font-size:14.5px; font-weight:700; color:var(--chili-dark); margin-top:8px; }
+  .dish-action{ flex-shrink:0; align-self:center; display:flex; align-items:center; gap:10px; }
+  .btn-plain{
+    background:none; border:none;
+    color:var(--ink-soft); font-size:13.5px; font-weight:600;
+    text-decoration:underline; text-underline-offset:2px;
+    white-space:nowrap; padding:0;
+  }
+  .btn-plain:hover{ color:var(--chili); }
+  .btn-add{
+    background:var(--ink);
+    color:var(--bg-card);
+    border:none;
+    padding:10px 18px;
+    border-radius:999px;
+    font-size:13.5px; font-weight:700;
+    white-space:nowrap;
+    transition:background .15s ease;
+  }
+  .btn-add:hover{ background:var(--chili); }
+
+  /* ---------- Overlay / modal shared ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(27,42,34,0.55);
+    display:none; align-items:flex-start; justify-content:center;
+    padding:40px 18px; overflow-y:auto; z-index:50;
+  }
+  .overlay.open{ display:flex; }
+  .modal{
+    background:var(--bg-card);
+    max-width:480px; width:100%;
+    border-radius:6px;
+    padding:0;
+    margin-top:20px;
+  }
+  .modal-head{
+    padding:24px 26px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .modal-head .modal-rest{ font-size:12.5px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.04em;}
+  .modal-head h3{ font-size:21px; margin-top:4px; }
+  .modal-head .dish-desc{ margin-top:6px; max-width:none; }
+  .modal-body{ padding:20px 26px; }
+  .modal-foot{
+    padding:18px 26px 24px;
+    border-top:1px solid var(--line);
+  }
+  .opt-group{ margin-bottom:22px; }
+  .opt-group:last-child{ margin-bottom:0; }
+  .opt-title{ font-size:13.5px; font-weight:700; margin-bottom:10px; }
+  .opt-title .opt-hint{ font-weight:500; color:var(--ink-soft); font-style:italic; }
+  .opt-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 12px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    margin-bottom:8px;
+    cursor:pointer;
+    font-size:14.5px;
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .opt-row:last-child{ margin-bottom:0; }
+  .opt-row:hover{ border-color:var(--mustard); }
+  .opt-row.selected{ border-color:var(--chili); background:rgba(193,64,31,0.06); }
+  .opt-row-left{ display:flex; align-items:center; gap:10px; }
+  .opt-mark{
+    width:16px; height:16px; border:1.5px solid var(--ink-soft); flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .opt-mark.round{ border-radius:50%; }
+  .opt-mark.square{ border-radius:3px; }
+  .opt-row.selected .opt-mark{ border-color:var(--chili); }
+  .opt-mark.round.on::after{ content:''; width:8px; height:8px; border-radius:50%; background:var(--chili); }
+  .opt-mark.square.on::after{ content:''; width:9px; height:9px; border-radius:1px; background:var(--chili); }
+  .opt-delta{ color:var(--ink-soft); font-size:13.5px; font-weight:600; }
+  .opt-row.selected .opt-delta{ color:var(--chili-dark); }
+
+  textarea.notes{
+    width:100%; border:1px solid var(--line); border-radius:4px;
+    padding:11px 13px; font-family:inherit; font-size:14.5px;
+    resize:vertical; min-height:64px; background:transparent; color:var(--ink);
+  }
+  textarea.notes:focus{ outline:none; border-color:var(--chili); }
+
+  .qty-row{ display:flex; align-items:center; justify-content:space-between; }
+  .stepper{ display:flex; align-items:center; gap:14px; }
+  .step-btn{
+    width:30px; height:30px; border-radius:50%;
+    border:1px solid var(--ink); background:transparent;
+    font-size:16px; font-weight:700; line-height:1;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step-btn:hover{ border-color:var(--chili); color:var(--chili); }
+  .step-val{ font-weight:700; font-size:15px; min-width:16px; text-align:center; }
+
+  .btn-primary{
+    width:100%; background:var(--chili); color:var(--chalk);
+    border:none; border-radius:999px; padding:14px 18px;
+    font-size:15px; font-weight:700;
+    display:flex; align-items:center; justify-content:space-between;
+    transition:background .15s ease;
+  }
+  .btn-primary:hover{ background:var(--chili-dark); }
+  .modal-close{
+    position:absolute; top:16px; right:18px;
+    background:none; border:none; font-size:20px; color:var(--ink-soft);
+    width:28px; height:28px;
+  }
+  .modal{ position:relative; }
+
+  /* ---------- Cart drawer ---------- */
+  .drawer-overlay{
+    position:fixed; inset:0; background:rgba(27,42,34,0.45);
+    display:none; z-index:60;
+  }
+  .drawer-overlay.open{ display:block; }
+  .drawer{
+    position:fixed; top:0; right:0; height:100%;
+    width:400px; max-width:92vw;
+    background:var(--bg-card);
+    box-shadow:-6px 0 24px rgba(0,0,0,0.18);
+    display:flex; flex-direction:column;
+    transform:translateX(100%);
+    transition:transform .22s ease;
+    z-index:61;
+  }
+  .drawer.open{ transform:translateX(0); }
+  .drawer-head{
+    padding:20px 24px; border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .drawer-head h3{ font-size:19px; }
+  .drawer-body{ flex:1; overflow-y:auto; padding:6px 24px; }
+  .cart-empty{ padding:60px 10px; text-align:center; color:var(--ink-soft); font-size:14.5px; }
+  .cart-item{ padding:16px 0; border-bottom:1px solid var(--line); }
+  .cart-item-top{ display:flex; justify-content:space-between; gap:12px; }
+  .ci-name{ font-weight:700; font-size:15px; font-family:'Bricolage Grotesque', sans-serif; }
+  .ci-rest{ font-size:12px; color:var(--ink-soft); margin-top:1px; }
+  .ci-opts{ font-size:13px; color:var(--ink-soft); margin-top:6px; line-height:1.5; }
+  .ci-notes{ font-size:13px; color:var(--chili-dark); font-style:italic; margin-top:4px; }
+  .ci-bottom{ display:flex; align-items:center; justify-content:space-between; margin-top:12px; }
+  .ci-remove{ background:none; border:none; font-size:12.5px; color:var(--ink-soft); text-decoration:underline; padding:0; }
+  .ci-remove:hover{ color:var(--chili); }
+  .ci-price{ font-weight:700; font-size:14.5px; }
+  .drawer-foot{ border-top:1px solid var(--line); padding:18px 24px 22px; }
+  .totals-row{ display:flex; justify-content:space-between; font-size:14.5px; margin-bottom:8px; color:var(--ink-soft); }
+  .totals-row.grand{ color:var(--ink); font-weight:700; font-size:16.5px; margin-top:10px; border-top:1px solid var(--line); padding-top:12px; }
+
+  .confirm-box{ padding:40px 26px; text-align:center; }
+  .confirm-mark{
+    width:52px; height:52px; border-radius:50%; background:var(--chili);
+    color:var(--chalk); display:flex; align-items:center; justify-content:center;
+    font-size:24px; margin:0 auto 18px;
+  }
+  .confirm-box h3{ font-size:20px; margin-bottom:8px; }
+  .confirm-box p{ color:var(--ink-soft); font-size:14.5px; max-width:280px; margin:0 auto; }
+  .btn-secondary{
+    margin-top:22px; background:transparent; border:1px solid var(--ink);
+    padding:11px 20px; border-radius:999px; font-size:14px; font-weight:600;
+  }
+  .btn-secondary:hover{ border-color:var(--chili); color:var(--chili); }
+
+  footer{ padding:36px 0 50px; text-align:center; color:var(--ink-soft); font-size:13px; }
+
+  .nav-actions{display:flex;align-items:center;gap:10px}
+  .nav-link{background:none;border:none;color:var(--chalk-soft);font-size:13.5px;font-weight:600;text-decoration:underline;text-underline-offset:3px}
+  .nav-link:hover{color:var(--mustard)}
+  .badge{display:inline-block;background:var(--mustard);color:var(--ink);font-size:10.5px;font-weight:700;padding:1px 7px;border-radius:999px;margin-left:6px;vertical-align:middle;font-family:'Public Sans',sans-serif}
+  .value-strip{background:var(--bg-card);border-bottom:1px solid var(--line)}
+  .value-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;padding:26px 0}
+  .value-item b{font-family:'Bricolage Grotesque',sans-serif;font-size:19px;display:block;color:var(--chili-dark)}
+  .value-item span{font-size:13.5px;color:var(--ink-soft)}
+  .pay-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+  .pay-chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 14px;font-size:13.5px;font-weight:600;color:var(--ink)}
+  .pay-chip.on{border-color:var(--chili);background:rgba(193,64,31,.08);color:var(--chili-dark)}
+  .panel-box{border:1px solid var(--line);background:var(--bg-card);padding:20px;margin-bottom:22px}
+  .panel-box h3{font-size:18px;margin-bottom:12px}
+  .fld{display:block;margin-bottom:12px;font-size:13px;font-weight:700}
+  .fld small{font-weight:400;color:var(--ink-soft)}
+  .fld input,.fld select,.fld textarea,.sel{display:block;width:100%;margin-top:5px;border:1px solid var(--line);border-radius:4px;padding:9px 11px;font:inherit;font-size:14.5px;background:#fff;color:var(--ink)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .order-card{border-top:1px solid var(--line);padding:14px 0;font-size:14px}
+  .order-card:first-of-type{border-top:none}
+  .pill{display:inline-block;font-size:12px;font-weight:700;padding:2px 10px;border-radius:999px;background:var(--mustard);color:var(--ink)}
+  .pill.s1{background:#E8C26A}.pill.s2{background:#4A7A2F;color:#fff}
+  .sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:6px}
+  .sum-grid div{font-size:12.5px;color:var(--ink-soft)}.sum-grid b{display:block;font-size:18px;color:var(--ink);font-family:'Bricolage Grotesque',sans-serif}
+  header.topbar{padding-top:env(safe-area-inset-top,0px)}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="logo" onclick="goHome()">
+      <span class="display">MenuFlex</span>
+      <span class="tag">tu menú, a tu manera</span>
+    </div>
+    <div class="nav-actions"><button class="nav-link" onclick="openPanel()">Soy restaurante</button><button class="cart-btn" onclick="openCart()">
+      Tu pedido
+      <span class="cart-badge" id="cartCount">0</span>
+    </button></div>
+  </div>
+</header>
+
+<div id="app"></div>
+
+<footer>MenuFlex — proyecto de demostración. Los pedidos no se procesan realmente.</footer>
+
+<!-- Customize modal -->
+<div class="overlay" id="customizeOverlay">
+  <div class="modal" id="customizeModal"></div>
+</div>
+
+<!-- Restaurant-switch confirm modal -->
+<div class="overlay" id="switchOverlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-rest">Un momento</div>
+      <h3 id="switchTitle">Ya tienes platos de otro restaurante</h3>
+      <p class="dish-desc" id="switchBody"></p>
+    </div>
+    <div class="modal-foot" style="display:flex; gap:10px;">
+      <button class="btn-secondary" style="flex:1; margin-top:0;" onclick="closeSwitch()">Cancelar</button>
+      <button class="btn-primary" style="flex:1;" onclick="confirmSwitch()"><span style="width:100%; text-align:center;">Vaciar y continuar</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- Cart drawer -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeCart()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>Tu pedido</h3>
+    <button class="modal-close" style="position:static;" onclick="closeCart()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</div>
+
+<script>
+/* ---------------- Data ---------------- */
+const CUISINE_COLORS = {
+  'Criolla':'#C1401F',
+  'Cevichería':'#1B6E7A',
+  'Saludable':'#4A7A2F',
+  'Chifa':'#B8562E',
+  'Menú del día':'#7A5C12'
+};
+
+const RESTAURANTS = [
+  {
+    id:'fogon', name:'El Fogón de la Esquina', cuisine:'Criolla', rating:4.7, time:'30-40 min',
+    pickupPoints:[
+      {id:'p1', label:'Jr. de la Unión 350, Cercado de Lima'},
+      {id:'p2', label:'Av. Larco 1220, Miraflores'}
+    ],
+    dishes:[
+      {id:'lomo', cat:'Platos fuertes', name:'Lomo Saltado', remove:['Cebolla','Tomate','Ají amarillo'], swap:parseOpts('Arroz blanco=0, Papas al horno=0, Ensalada fresca=1','s'), desc:'Trozos de res salteados con cebolla, tomate y papas fritas, servido con arroz.', price:24,
+        sizes:[{id:'ind', label:'Individual', delta:0}, {id:'comp', label:'Para compartir (2 personas)', delta:18}],
+        extras:[{id:'papa', label:'Extra papas fritas', delta:4}, {id:'arroz', label:'Extra arroz', delta:3}, {id:'huevo', label:'Huevo frito', delta:3}, {id:'carne', label:'Doble carne', delta:9}]},
+      {id:'aji', cat:'Platos fuertes', name:'Ají de Gallina', remove:['Aceituna','Huevo duro'], swap:parseOpts('Arroz blanco=0, Papas sancochadas=0','s'), desc:'Pollo deshilachado en crema de ají amarillo, con arroz y aceituna.', price:20,
+        extras:[{id:'crema', label:'Extra crema de ají', delta:3}, {id:'papa', label:'Papa extra', delta:3}, {id:'suave', label:'Versión sin picante', delta:0}]},
+      {id:'causa', cat:'Platos fuertes', name:'Causa Limeña Rellena', desc:'Capas de papa amarilla sazonada con limón y ají, con el relleno que elijas.', price:16,
+        sizes:[{id:'pollo', label:'Relleno de pollo', delta:0}, {id:'atun', label:'Relleno de atún', delta:2}, {id:'palta', label:'Relleno de palta (vegetariana)', delta:1}],
+        extras:[{id:'extra_rel', label:'Porción extra de relleno', delta:4}]},
+      {id:'antic', cat:'Platos fuertes', name:'Anticuchos de Corazón', desc:'Tres brochetas a la parrilla, con papa dorada y choclo.', price:18,
+        extras:[{id:'broch', label:'Brocheta extra', delta:7}, {id:'choclo', label:'Choclo extra', delta:3}, {id:'papa', label:'Papa extra', delta:3}]},
+      {id:'chicha', cat:'Bebidas', name:'Chicha Morada', desc:'Bebida de maíz morado, piña y especias, endulzada al toque.', price:10,
+        sizes:[{id:'med', label:'1/2 litro', delta:-3}, {id:'lit', label:'1 litro', delta:0}, {id:'gran', label:'1.5 litros', delta:4}]}
+    ]
+  },
+  {
+    featured:true, id:'marino', name:'Sabor Marino', cuisine:'Cevichería', rating:4.8, time:'25-35 min',
+    pickupPoints:[
+      {id:'p1', label:'Malecón Cisneros 800, Miraflores'},
+      {id:'p2', label:'Av. La Marina 2100, San Miguel'}
+    ],
+    dishes:[
+      {id:'ceviche', cat:'Platos fuertes', name:'Ceviche Clásico', remove:['Cebolla','Culantro','Ají limo'], swap:parseOpts('Camote=0, Choclo=0, Yuca frita=2','s'), desc:'Pescado fresco marinado en limón, cebolla morada, ají y camote.', price:28,
+        sizes:[{id:'ind', label:'Individual', delta:0}, {id:'comp', label:'Para 2 personas', delta:22}],
+        extras:[{id:'choclo', label:'Choclo extra', delta:3}, {id:'camote', label:'Camote extra', delta:3}, {id:'chich', label:'Chicharrón de pescado', delta:8}, {id:'picante', label:'Extra picante', delta:0}]},
+      {id:'tiradito', cat:'Platos fuertes', name:'Tiradito Nikkei', desc:'Finas láminas de pescado bañadas en salsa nikkei con toque de ajonjolí.', price:30,
+        extras:[{id:'pesc', label:'Pescado extra', delta:10}]},
+      {id:'arrozmar', cat:'Platos fuertes', name:'Arroz con Mariscos', desc:'Arroz al wok con mezcla de mariscos y un toque de culantro.', price:26,
+        extras:[{id:'doble', label:'Doble mariscos', delta:12}]},
+      {id:'leche', cat:'Bebidas', name:'Leche de Tigre', desc:'El jugo del ceviche, servido como shot bien helado.', price:8,
+        sizes:[{id:'normal', label:'Shot normal', delta:0}, {id:'doble', label:'Shot doble', delta:6}]},
+      {id:'chicharron', cat:'Platos fuertes', name:'Chicharrón Mixto', desc:'Pescado y mariscos apanados y fritos, servido con salsa criolla.', price:32,
+        extras:[{id:'camotef', label:'Camote frito', delta:4}, {id:'yuca', label:'Yuca frita', delta:4}]}
+    ]
+  },
+  {
+    id:'green', name:'Green Bowl', cuisine:'Saludable', rating:4.6, time:'20-30 min',
+    pickupPoints:[
+      {id:'p1', label:'Av. Conquistadores 500, San Isidro'},
+      {id:'p2', label:'Av. El Polo 670, Surco'}
+    ],
+    dishes:[
+      {id:'quinoa', cat:'Platos fuertes', name:'Bowl de Quinoa', remove:['Tomate cherry','Palta'], desc:'Quinoa, palta, tomate cherry y vegetales salteados de estación.', price:22,
+        extras:[{id:'pollo', label:'Pollo a la plancha', delta:6}, {id:'tofu', label:'Tofu marinado', delta:5}, {id:'palta', label:'Palta extra', delta:3}, {id:'huevo', label:'Huevo poché', delta:4}]},
+      {id:'wrap', cat:'Platos fuertes', name:'Wrap Integral de Pollo', remove:['Aderezo de yogur','Lechuga'], swap:parseOpts('Con tortilla integral=0, Con ensalada (sin tortilla)=1','s'), desc:'Tortilla integral con pollo, vegetales frescos y aderezo de yogur.', price:18,
+        extras:[{id:'queso', label:'Queso extra', delta:2}, {id:'palta', label:'Palta extra', delta:3}]},
+      {id:'cesar', cat:'Platos fuertes', name:'Ensalada César Fit', desc:'Lechugas mixtas, parmesano y aderezo César aligerado.', price:17,
+        extras:[{id:'pollo', label:'Pollo a la plancha', delta:6}, {id:'croton', label:'Crotones integrales', delta:2}]},
+      {id:'jugo', cat:'Bebidas', name:'Jugo Verde Detox', desc:'Espinaca, apio, manzana verde y jengibre.', price:10,
+        sizes:[{id:'chico', label:'300 ml', delta:0}, {id:'grande', label:'500 ml', delta:3}]},
+      {id:'tostada', cat:'Platos fuertes', name:'Tostadas de Palta', desc:'Pan integral tostado con palta y un toque de limón.', price:14,
+        extras:[{id:'huevo', label:'Huevo poché', delta:4}, {id:'semillas', label:'Semillas mixtas', delta:2}]}
+    ]
+  },
+  {
+    id:'dragon', name:'Dragón Wok', cuisine:'Chifa', rating:4.5, time:'30-40 min',
+    pickupPoints:[
+      {id:'p1', label:'Calle Capón 200, Barrio Chino'},
+      {id:'p2', label:'Av. Angamos Este 1800, Surquillo'}
+    ],
+    dishes:[
+      {id:'chaufa', cat:'Platos fuertes', name:'Arroz Chaufa de Pollo', remove:['Cebolla china','Huevo'], desc:'Arroz al wok con pollo, huevo, cebolla china y sillao.', price:20,
+        extras:[{id:'pollo', label:'Doble pollo', delta:8}, {id:'huevo', label:'Huevo extra', delta:3}, {id:'salch', label:'Salchicha china', delta:4}]},
+      {id:'tallarin', cat:'Platos fuertes', name:'Tallarín Saltado de Carne', desc:'Tallarines salteados con res, cebolla china y vegetales.', price:22,
+        extras:[{id:'verd', label:'Vegetales extra', delta:3}, {id:'carne', label:'Doble carne', delta:9}]},
+      {id:'wanton', cat:'Entradas', name:'Wantán Frito', desc:'Crocantes wantanes rellenos, con salsa agridulce.', price:16,
+        sizes:[{id:'diez', label:'10 unidades', delta:0}, {id:'veinte', label:'20 unidades', delta:14}]},
+      {id:'sopa', cat:'Entradas', name:'Sopa Wantán', desc:'Caldo de gallina con wantanes, fideos y verduras.', price:15},
+      {id:'tamarindo', cat:'Platos fuertes', name:'Chicharrón Chino con Tamarindo', desc:'Cerdo crocante bañado en salsa agridulce de tamarindo.', price:24,
+        extras:[{id:'salsa', label:'Porción extra de salsa', delta:2}]}
+    ]
+  },
+  {
+    id:'sazon', name:'Sazón del Campus', cuisine:'Menú del día', rating:4.6, time:'15-25 min',
+    pickupPoints:[{id:'p1', label:'Campus UTP — puerta principal (piloto)'}],
+    dishes:[
+      {id:'pollo', cat:'Platos fuertes', name:'Pollo a la Plancha', desc:'Pechuga a la plancha con arroz y ensalada. Menú del día.', price:12.5,
+        remove:['Cebolla','Salsa criolla'], swap:parseOpts('Arroz=0, Papas fritas=0','s'),
+        extras:[{id:'palta', label:'Palta', delta:3}, {id:'huevo', label:'Huevo', delta:2}, {id:'prot', label:'Porción extra de proteína', delta:5}]},
+      {id:'lim', cat:'Bebidas', name:'Limonada Frozen', desc:'Limonada helada en vaso grande.', price:6,
+        sizes:[{id:'m', label:'Mediana', delta:0}, {id:'g', label:'Grande', delta:2}]}
+    ]
+  }
+];
+
+/* ---------------- State ---------------- */
+let currentRestaurantId = null;
+let activeCuisineFilter = 'Todos';
+let cart = []; // {cartId, restaurantId, restaurantName, dishId, dishName, sizeLabel, extras:[{label,delta}], notes, qty, unitPrice}
+let modalCtx = null; // {restaurant, dish, sizeId, extraIds:Set, notes, qty}
+let pendingSwitch = null; // {restaurant, dish}
+let confirmedOrder = null;
+let selectedPickupId = null;
+let orders = [], selectedPay = 'Yape', panelMode = false, managedId = 'fogon';
+const PAYS = ['Yape','Plin','Tarjeta','Transferencia'], STATUS = ['Recibido','Preparando','Listo para recoger'];
+function parseOpts(t,p){ return (t||'').split(',').map(x=>x.trim()).filter(Boolean).map((x,i)=>{ const [l,d]=x.split('='); return {id:p+i, label:l.trim(), delta:parseFloat(d)||0}; }); }
+
+const money = n => 'S/ ' + n.toFixed(2);
+const uid = () => Math.random().toString(36).slice(2,10);
+
+function findRestaurant(id){ return RESTAURANTS.find(r => r.id === id); }
+
+/* ---------------- Rendering: routes ---------------- */
+function goHome(){ panelMode = false; currentRestaurantId = null; render(); window.scrollTo({top:0}); }
+function openRestaurant(id){ panelMode = false; currentRestaurantId = id; render(); window.scrollTo({top:0}); }
+function setFilter(c){ activeCuisineFilter = c; render(); }
+
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = panelMode ? renderPanel() : currentRestaurantId ? renderRestaurantView(findRestaurant(currentRestaurantId)) : renderHomeView();
+  updateCartBadge();
+}
+
+function renderHomeView(){
+  const cuisines = ['Todos', ...new Set(RESTAURANTS.map(r => r.cuisine))];
+  const list = (activeCuisineFilter === 'Todos' ? RESTAURANTS : RESTAURANTS.filter(r => r.cuisine === activeCuisineFilter)).slice().sort((a,b)=>(b.featured?1:0)-(a.featured?1:0));
+  return `
+    <section class="hero">
+      <div class="wrap">
+        <h1>Tu menú, a tu manera</h1>
+        <p class="lead">Pide el plato tal cual viene, o personalízalo si quieres: quita ingredientes, cambia el acompañamiento o súmale extras, y recógelo en el local. Piloto en la comunidad UTP: por ahora sin delivery.</p>
+        <div class="chips">
+          ${cuisines.map(c => `<button class="chip ${c===activeCuisineFilter?'active':''}" onclick="setFilter('${c}')">${c}</button>`).join('')}
+        </div>
+      </div>
+    </section>
+    <section class="value-strip"><div class="wrap value-grid">
+      <div class="value-item"><b>Personalización controlada</b><span>Cada restaurante define qué se puede cambiar y cuánto cuesta.</span></div>
+      <div class="value-item"><b>Precio final visible</b><span>Ves el costo de cada extra y el total antes de pagar.</span></div>
+      <div class="value-item"><b>Comisión de solo 12%</b><span>Frente al 22%–30% de las apps grandes de delivery.</span></div>
+    </div></section>
+    <section class="section">
+      <div class="wrap">
+        <div class="section-head">
+          <h2>Elige un restaurante</h2>
+          <span class="count">${list.length} disponibles</span>
+        </div>
+        <div class="stall-grid">
+          ${list.map(r => `
+            <button class="stall-card" style="--cuisine-color:${CUISINE_COLORS[r.cuisine]}" onclick="openRestaurant('${r.id}')">
+              <div class="stall-top">
+                <div class="stall-mono">${r.name.charAt(0)}</div>
+                <div>
+                  <div class="stall-name">${r.name}${r.featured?'<span class="badge">Destacado</span>':''}</div>
+                  <div class="stall-cuisine">${r.cuisine}</div>
+                </div>
+              </div>
+              <div class="stall-meta">
+                <span>★ <b>${r.rating}</b></span>
+                <span>Listo en <b>${r.time}</b></span>
+                <span><b>${r.dishes.length}</b> platos</span>
+              </div>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderRestaurantView(r){
+  const cats = [...new Set(r.dishes.map(d => d.cat))];
+  return `
+    <section class="rest-banner">
+      <div class="wrap">
+        <button class="back-link" onclick="goHome()">‹ Volver a restaurantes</button>
+        <div class="rest-banner-row">
+          <div class="stall-mono" style="--cuisine-color:${CUISINE_COLORS[r.cuisine]}; background:${CUISINE_COLORS[r.cuisine]}; width:54px; height:54px; font-size:21px;">${r.name.charAt(0)}</div>
+          <div>
+            <h2>${r.name}</h2>
+            <div class="stall-meta">
+              <span>${r.cuisine}</span>
+              <span>★ <b>${r.rating}</b></span>
+              <span>Listo en <b>${r.time}</b></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="wrap">
+        ${cats.map(cat => `
+          <div class="cat-label">${cat}</div>
+          <div class="dish-list">
+            ${r.dishes.filter(d => d.cat === cat).map(d => `
+              <div class="dish-row">
+                <div class="dish-info">
+                  <div class="dish-name">${d.name}</div>
+                  <div class="dish-desc">${d.desc}</div>
+                  <div class="dish-price">${money(d.price)}</div>
+                </div>
+                <div class="dish-action">
+                  <button class="btn-plain" onclick="quickAdd('${r.id}','${d.id}')">Agregar</button>
+                  <button class="btn-add" onclick="startCustomize('${r.id}','${d.id}')">Personalizar</button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `).join('')}
+      </div>
+    </section>
+  `;
+}
+
+/* ---------------- Customize modal ---------------- */
+function startCustomize(restId, dishId){
+  const restaurant = findRestaurant(restId);
+  const dish = restaurant.dishes.find(d => d.id === dishId);
+  modalCtx = {
+    restaurant, dish,
+    sizeId: dish.sizes ? dish.sizes[0].id : null, swapId: dish.swap ? dish.swap[0].id : null, removeIds: new Set(),
+    extraIds: new Set(),
+    notes:'',
+    qty:1
+  };
+  renderModal();
+  document.getElementById('customizeOverlay').classList.add('open');
+}
+
+function closeModal(){
+  document.getElementById('customizeOverlay').classList.remove('open');
+  modalCtx = null;
+}
+
+function modalUnitPrice(){
+  const { dish, sizeId, extraIds } = modalCtx;
+  let p = dish.price;
+  if (dish.sizes){ p += dish.sizes.find(s => s.id === sizeId).delta; }
+  if (dish.swap){ p += dish.swap.find(s => s.id === modalCtx.swapId).delta; }
+  if (dish.extras){ dish.extras.forEach(e => { if (extraIds.has(e.id)) p += e.delta; }); }
+  return p;
+}
+
+function renderModal(){
+  const { restaurant, dish, sizeId, extraIds, qty } = modalCtx;
+  const unit = modalUnitPrice();
+  document.getElementById('customizeModal').innerHTML = `
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-head">
+      <div class="modal-rest">${restaurant.name}</div>
+      <h3>${dish.name}</h3>
+      <p class="dish-desc">${dish.desc}</p>
+    </div>
+    <div class="modal-body">
+      ${dish.sizes ? `
+        <div class="opt-group">
+          <div class="opt-title">Tamaño / presentación</div>
+          ${dish.sizes.map(s => `
+            <div class="opt-row ${sizeId===s.id?'selected':''}" onclick="pickSize('${s.id}')">
+              <div class="opt-row-left">
+                <span class="opt-mark round ${sizeId===s.id?'on':''}"></span>
+                <span>${s.label}</span>
+              </div>
+              <span class="opt-delta">${s.delta===0?'incluido':(s.delta>0?'+':'')+money(s.delta)}</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+      ${dish.swap ? `
+        <div class="opt-group">
+          <div class="opt-title">Cambiar acompañamiento <span class="opt-hint">(opcional)</span></div>
+          ${dish.swap.map(o => `<div class="opt-row ${modalCtx.swapId===o.id?'selected':''}" onclick="modalCtx.swapId='${o.id}';renderModal()"><div class="opt-row-left"><span class="opt-mark round ${modalCtx.swapId===o.id?'on':''}"></span><span>${o.label}</span></div><span class="opt-delta">${o.delta===0?'sin costo':'+'+money(o.delta)}</span></div>`).join('')}
+        </div>` : ''}
+      ${dish.remove ? `
+        <div class="opt-group">
+          <div class="opt-title">Quitar ingredientes <span class="opt-hint">(opcional, sin costo)</span></div>
+          ${dish.remove.map((o,i) => `<div class="opt-row ${modalCtx.removeIds.has(i)?'selected':''}" onclick="toggleRemove(${i})"><div class="opt-row-left"><span class="opt-mark square ${modalCtx.removeIds.has(i)?'on':''}"></span><span>Sin ${o.toLowerCase()}</span></div></div>`).join('')}
+        </div>` : ''}
+      ${dish.extras ? `
+        <div class="opt-group">
+          <div class="opt-title">Agregar algo más <span class="opt-hint">(opcional)</span></div>
+          ${dish.extras.map(e => `
+            <div class="opt-row ${extraIds.has(e.id)?'selected':''}" onclick="toggleExtra('${e.id}')">
+              <div class="opt-row-left">
+                <span class="opt-mark square ${extraIds.has(e.id)?'on':''}"></span>
+                <span>${e.label}</span>
+              </div>
+              <span class="opt-delta">${e.delta===0?'sin costo':'+'+money(e.delta)}</span>
+            </div>
+          `).join('')}
+        </div>
+      ` : ''}
+      <div class="opt-group">
+        <div class="opt-title">Instrucciones especiales <span class="opt-hint">(opcional)</span></div>
+        <textarea class="notes" placeholder="Ej: sin cebolla, poco picante, salsa aparte..." oninput="modalCtx.notes=this.value">${modalCtx.notes}</textarea>
+      </div>
+      <div class="opt-group">
+        <div class="opt-title">Cantidad</div>
+        <div class="qty-row">
+          <div class="stepper">
+            <button class="step-btn" onclick="changeQty(-1)">–</button>
+            <span class="step-val">${qty}</span>
+            <button class="step-btn" onclick="changeQty(1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-primary" onclick="confirmAddToCart()">
+        <span>Agregar al pedido</span>
+        <span>${money(unit * qty)}</span>
+      </button>
+    </div>
+  `;
+}
+
+function toggleRemove(i){ const r=modalCtx.removeIds; if(r.has(i)) r.delete(i); else r.add(i); renderModal(); }
+function pickSize(id){ modalCtx.sizeId = id; renderModal(); }
+function toggleExtra(id){
+  if (modalCtx.extraIds.has(id)) modalCtx.extraIds.delete(id); else modalCtx.extraIds.add(id);
+  renderModal();
+}
+function changeQty(d){
+  modalCtx.qty = Math.max(1, modalCtx.qty + d);
+  renderModal();
+}
+
+function quickAdd(restId, dishId){
+  const restaurant = findRestaurant(restId);
+  const dish = restaurant.dishes.find(d => d.id === dishId);
+  const ctx = {
+    restaurant, dish,
+    sizeId: dish.sizes ? dish.sizes[0].id : null, swapId: dish.swap ? dish.swap[0].id : null, removeIds: new Set(),
+    extraIds: new Set(),
+    notes:'',
+    qty:1
+  };
+  tryAddToCart(ctx);
+}
+
+function confirmAddToCart(){
+  tryAddToCart(modalCtx);
+}
+
+function tryAddToCart(ctx){
+  const otherRestInCart = cart.find(i => i.restaurantId !== ctx.restaurant.id);
+  if (otherRestInCart){
+    pendingSwitch = ctx;
+    document.getElementById('switchTitle').textContent = 'Ya tienes platos de ' + otherRestInCart.restaurantName;
+    document.getElementById('switchBody').textContent = 'Por ahora solo puedes pedir de un restaurante a la vez. ¿Vaciamos tu pedido actual para agregar platos de ' + ctx.restaurant.name + '?';
+    document.getElementById('switchOverlay').classList.add('open');
+    return;
+  }
+  addCtxToCart(ctx);
+}
+
+function addCtxToCart(ctx){
+  const { restaurant, dish, sizeId, extraIds, notes, qty } = ctx;
+  const sizeObj = dish.sizes ? dish.sizes.find(s => s.id === sizeId) : null;
+  const extrasChosen = (dish.extras || []).filter(e => extraIds.has(e.id));
+  let unit = dish.price;
+  if (sizeObj) unit += sizeObj.delta;
+  if (dish.swap) unit += dish.swap.find(o => o.id === ctx.swapId).delta;
+  extrasChosen.forEach(e => unit += e.delta);
+  cart.push({
+    cartId: uid(),
+    restaurantId: restaurant.id,
+    restaurantName: restaurant.name,
+    dishName: dish.name,
+    sizeLabel: sizeObj ? sizeObj.label : null,
+    swapLabel: dish.swap ? dish.swap.find(o => o.id === ctx.swapId).label : null,
+    removed: (dish.remove || []).filter((_,i) => ctx.removeIds.has(i)),
+    extras: extrasChosen.map(e => ({label:e.label, delta:e.delta})),
+    notes: notes.trim(),
+    qty,
+    unitPrice: unit
+  });
+  if (document.getElementById('customizeOverlay').classList.contains('open')) closeModal();
+  selectedPickupId = null;
+  updateCartBadge();
+  openCart();
+}
+
+/* ---------------- Restaurant switch confirm ---------------- */
+function closeSwitch(){
+  document.getElementById('switchOverlay').classList.remove('open');
+  pendingSwitch = null;
+}
+function confirmSwitch(){
+  cart = [];
+  const ctx = pendingSwitch;
+  pendingSwitch = null;
+  document.getElementById('switchOverlay').classList.remove('open');
+  addCtxToCart(ctx);
+}
+
+/* ---------------- Cart drawer ---------------- */
+function updateCartBadge(){
+  document.getElementById('cartCount').textContent = cart.reduce((s,i) => s + i.qty, 0);
+}
+
+function openCart(){
+  confirmedOrder = null;
+  renderCart();
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('drawerOverlay').classList.add('open');
+}
+function closeCart(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+
+function cartLineTotal(item){ return item.unitPrice * item.qty; }
+function cartSubtotal(){ return cart.reduce((s,i) => s + cartLineTotal(i), 0); }
+
+function renderCart(){
+  const body = document.getElementById('drawerBody');
+  const foot = document.getElementById('drawerFoot');
+
+  if (confirmedOrder){
+    body.innerHTML = `
+      <div class="confirm-box">
+        <div class="confirm-mark">✓</div>
+        <h3>¡Pedido confirmado!</h3>
+        <p>Tu pedido de ${confirmedOrder.restaurantName} estará listo para recoger en ${confirmedOrder.pickupLabel}. Pago con ${confirmedOrder.pay}: ${money(confirmedOrder.total)}.</p>
+        <button class="btn-secondary" onclick="resetAfterOrder()">Hacer otro pedido</button>
+      </div>
+    `;
+    foot.innerHTML = '';
+    return;
+  }
+
+  if (cart.length === 0){
+    body.innerHTML = `<div class="cart-empty">Tu pedido está vacío.<br>Elige un restaurante y arma tu plato.</div>${ordersHtml()}`;
+    foot.innerHTML = '';
+    return;
+  }
+
+  body.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-item-top">
+        <div>
+          <div class="ci-name">${item.dishName}</div>
+          <div class="ci-rest">${item.restaurantName}</div>
+        </div>
+      </div>
+      <div class="ci-opts">
+        ${item.sizeLabel ? item.sizeLabel + '<br>' : ''}${item.swapLabel ? 'Acompañamiento: ' + item.swapLabel + '<br>' : ''}${item.removed.length ? 'Sin: ' + item.removed.join(', ') + '<br>' : ''}
+        ${item.extras.length ? '+ ' + item.extras.map(e=>e.label).join(', ') : ''}
+      </div>
+      ${item.notes ? `<div class="ci-notes">"${item.notes}"</div>` : ''}
+      <div class="ci-bottom">
+        <div class="stepper">
+          <button class="step-btn" onclick="cartQty('${item.cartId}',-1)">–</button>
+          <span class="step-val">${item.qty}</span>
+          <button class="step-btn" onclick="cartQty('${item.cartId}',1)">+</button>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <span class="ci-price">${money(cartLineTotal(item))}</span>
+          <button class="ci-remove" onclick="removeFromCart('${item.cartId}')">Quitar</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  const restaurant = findRestaurant(cart[0].restaurantId);
+  if (!selectedPickupId) selectedPickupId = restaurant.pickupPoints[0].id;
+  const subtotal = cartSubtotal();
+
+  foot.innerHTML = `
+    <div class="opt-title" style="margin-bottom:10px;">Punto de recojo <span class="opt-hint">— por ahora sin delivery</span></div>
+    ${restaurant.pickupPoints.map(p => `
+      <div class="opt-row ${selectedPickupId===p.id?'selected':''}" onclick="pickPickup('${p.id}')">
+        <div class="opt-row-left">
+          <span class="opt-mark round ${selectedPickupId===p.id?'on':''}"></span>
+          <span>${p.label}</span>
+        </div>
+      </div>
+    `).join('')}
+    <div class="opt-title" style="margin:14px 0 8px;">Método de pago</div>
+    <div class="pay-row">${PAYS.map(p => `<button class="pay-chip ${selectedPay===p?'on':''}" onclick="selectedPay='${p}';renderCart()">${p}</button>`).join('')}</div>
+    <div class="totals-row grand" style="margin-top:14px;"><span>Total a pagar</span><span>${money(subtotal)}</span></div>
+    <button class="btn-primary" style="margin-top:14px;" onclick="checkout(${subtotal})">
+      <span style="width:100%; text-align:center;">Confirmar pedido</span>
+    </button>
+  `;
+}
+
+function pickPickup(id){ selectedPickupId = id; renderCart(); }
+
+function cartQty(cartId, d){
+  const item = cart.find(i => i.cartId === cartId);
+  item.qty = Math.max(1, item.qty + d);
+  renderCart();
+  updateCartBadge();
+}
+function removeFromCart(cartId){
+  cart = cart.filter(i => i.cartId !== cartId);
+  if (cart.length === 0) selectedPickupId = null;
+  renderCart();
+  updateCartBadge();
+}
+
+function checkout(total){
+  const restaurant = findRestaurant(cart[0].restaurantId);
+  const pickup = restaurant.pickupPoints.find(p => p.id === selectedPickupId);
+  orders.push({ id: orders.length + 1, restaurantId: restaurant.id, restaurantName: restaurant.name, items: cart, total, pickupLabel: pickup.label, pay: selectedPay, status: 0 });
+  confirmedOrder = { restaurantName: restaurant.name, total, pickupLabel: pickup.label, pay: selectedPay };
+  cart = [];
+  selectedPickupId = null;
+  updateCartBadge();
+  renderCart();
+}
+function resetAfterOrder(){
+  confirmedOrder = null;
+  closeCart();
+}
+
+/* ---------------- Panel del restaurante ---------------- */
+function openPanel(){ panelMode = true; currentRestaurantId = null; render(); window.scrollTo({top:0}); }
+function itemLines(i){ return [i.sizeLabel, i.swapLabel && 'Acompañamiento: ' + i.swapLabel, i.removed.length && 'SIN: ' + i.removed.join(', '), i.extras.length && 'EXTRAS: ' + i.extras.map(e => e.label).join(', '), i.notes && 'Nota: "' + i.notes + '"'].filter(Boolean).join(' · '); }
+function ordersHtml(){
+  if (!orders.length) return '';
+  return '<div style="padding:10px 0"><div class="opt-title">Mis pedidos</div>' + orders.slice().reverse().map(o => `<div class="order-card">#${o.id} · ${o.restaurantName} · ${money(o.total)}<br><span class="pill s${o.status}">${STATUS[o.status]}</span> <small>Recojo: ${o.pickupLabel}</small></div>`).join('') + '</div>';
+}
+function advance(id){ const o = orders.find(x => x.id === id); o.status = Math.min(2, o.status + 1); render(); }
+function addDish(){
+  const v = id => document.getElementById(id).value.trim();
+  const price = parseFloat(v('d-price'));
+  if (!v('d-name') || isNaN(price)) return;
+  const r = findRestaurant(managedId), swap = parseOpts(v('d-swap'),'s'), extras = parseOpts(v('d-extras'),'e');
+  r.dishes.push({ id:'d'+uid(), cat:v('d-cat'), name:v('d-name'), desc:v('d-desc'), price,
+    remove: v('d-remove') ? v('d-remove').split(',').map(x => x.trim()).filter(Boolean) : undefined,
+    swap: swap.length ? swap : undefined, extras: extras.length ? extras : undefined });
+  render();
+}
+function registerRestaurant(){
+  const v = id => document.getElementById(id).value.trim();
+  if (!v('r-name') || !v('r-addr')) return;
+  const r = { id:'r'+uid(), name:v('r-name'), cuisine:v('r-cuisine'), rating:'Nuevo', time:'20-30 min', pickupPoints:[{id:'p1', label:v('r-addr')}], dishes:[] };
+  RESTAURANTS.push(r); managedId = r.id; render();
+}
+function renderPanel(){
+  const r = findRestaurant(managedId), mine = orders.filter(o => o.restaurantId === r.id);
+  const gross = mine.reduce((s,o) => s + o.total, 0), fee = gross * 0.12;
+  return `
+  <section class="rest-banner"><div class="wrap">
+    <button class="back-link" onclick="goHome()">‹ Volver al inicio</button>
+    <h2>Panel del restaurante</h2>
+    <p style="color:var(--chalk-soft);font-size:14.5px;margin:8px 0 0;max-width:560px">Publica tu menú, define qué se puede modificar y cuánto cuesta cada extra, y recibe las órdenes con los cambios claramente indicados.</p>
+  </div></section>
+  <section class="section"><div class="wrap">
+    <label class="fld">Administrando<select class="sel" onchange="managedId=this.value;render()">${RESTAURANTS.map(x => `<option value="${x.id}" ${x.id===managedId?'selected':''}>${x.name}</option>`).join('')}</select></label>
+    <div class="panel-box"><h3>Pedidos recibidos</h3>
+      <div class="sum-grid"><div>Ventas<b>${money(gross)}</b></div><div>Comisión MenuFlex (12%)<b>${money(fee)}</b></div><div>Tú recibes<b>${money(gross - fee)}</b></div></div>
+      ${mine.length ? mine.slice().reverse().map(o => `<div class="order-card"><b>Pedido #${o.id}</b> · ${money(o.total)} · pago ${o.pay}<br>${o.items.map(i => `<div>${i.qty}× <b>${i.dishName}</b>${itemLines(i) ? '<br><small>' + itemLines(i) + '</small>' : ''}</div>`).join('')}<small>Recojo: ${o.pickupLabel}</small><br>
+        <span class="pill s${o.status}">${STATUS[o.status]}</span> ${o.status < 2 ? `<button class="btn-plain" onclick="advance(${o.id})">Marcar como ${STATUS[o.status+1].toLowerCase()}</button>` : ''}</div>`).join('') : '<p style="color:var(--ink-soft);font-size:14px;margin:0">Aún no hay pedidos. Haz uno desde la vista de clientes para probar el flujo.</p>'}
+    </div>
+    <div class="panel-box"><h3>Agregar un plato a ${r.name}</h3>
+      <div class="two"><label class="fld">Nombre<input id="d-name"></label><label class="fld">Precio (S/)<input id="d-price" type="number" step="0.5"></label></div>
+      <label class="fld">Descripción<input id="d-desc"></label>
+      <label class="fld">Categoría<select id="d-cat"><option>Platos fuertes</option><option>Entradas</option><option>Bebidas</option></select></label>
+      <label class="fld">Ingredientes que el cliente puede quitar <small>(separados por coma)</small><input id="d-remove" placeholder="Cebolla, Tomate"></label>
+      <label class="fld">Cambios de acompañamiento <small>(nombre=costo; el primero viene por defecto)</small><input id="d-swap" placeholder="Arroz=0, Papas fritas=0, Ensalada=1.5"></label>
+      <label class="fld">Extras con su precio <small>(nombre=costo)</small><input id="d-extras" placeholder="Palta=3, Huevo=2, Porción extra=5"></label>
+      <button class="btn-primary" style="max-width:260px" onclick="addDish()"><span style="width:100%;text-align:center">Publicar plato</span></button>
+    </div>
+    <div class="panel-box"><h3>Registrar un restaurante nuevo</h3>
+      <div class="two"><label class="fld">Nombre<input id="r-name"></label><label class="fld">Tipo de cocina<select id="r-cuisine">${Object.keys(CUISINE_COLORS).map(c => `<option>${c}</option>`).join('')}</select></label></div>
+      <label class="fld">Punto de recojo (dirección)<input id="r-addr"></label>
+      <button class="btn-primary" style="max-width:260px" onclick="registerRestaurant()"><span style="width:100%;text-align:center">Registrar restaurante</span></button>
+    </div>
+  </div></section>`;
+}
+
+/* ---------------- Init ---------------- */
+render();
+</script>
+</body>
+</html>
